@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <style type="text/css"><!--
+
+    td.past-month {
+        color: #bbb;
+    }
+
+    #cal table {
+        margin: 0 10%;
+        width: 80%;
+        height: 80%;
+    }
+
+    #cal h1 {
+        background-color: #fff;
+        padding: 3px;
+    }
+
+    //--></style>
+{% endblock %}
+<!--<form name="puzzle_kind" action="/puzzles" method="post">--!>
+	{% block body %}
+	    <div class="row">
+		<div class="twelve columns centered">
+		    <div id="cal">
+			<table border="0">
+				<tr>
+					<td rowspan="2"><a href=./{{year-1}}><div align="left">{{year-1}}</div></a></td>
+					<td></td>
+					<td><div align="right">
+<!--					<label for="crossword">Crossword</label>
+						<input type="radio" name="puzzle" id="crossword">--!>
+					</div></td>
+					<td><div align="left">
+<!--						<label for="puzzles">Puzzle</label>
+						<input type="radio" name="type" id="puzzles" value="puzzles">--!>
+					</div></td>
+					<td></td>
+					<td rowspan="2"><a href=./{{year+1}}><div align="right">{{year+1}}</div></a></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td><div align="right">
+<!--						<label for="sudoku">Sudoku</label>
+						<input type="radio" name="puzzle" id="sudoku" value="sudoku">--!>
+					</div></td>
+					<td><div align="left">
+<!--						<label for="answers">Answer</label>
+						<input type="radio" name="type" id="answers" value="sudoku">--!>
+					</div></td>
+					<td></td>
+				</tr>
+			</table>
+			{% for month in cal %}
+			{% set current_month = loop.index %}
+			<div>
+			    <h1>{{ ['January', 'February', 'March', 'April',
+				    'May', 'June', 'July', 'August',
+				    'September', 'October', 'November', 'December'][loop.index0] }} {{ year }}</h1>
+			    <table border="1">
+				<tr>
+					<th>Sunday</th>
+					<th>Monday</th>
+					<th>Tuesday</th>
+					<th>Wednesday</th>
+					<th>Thursday</th>
+					<th>Friday</th>
+					<th>Saturday</th>
+				</tr>
+				{% for week in month %}
+				<tr>
+				    {% for date in week %}
+					{% if date.month == current_month %}
+					<td class="current-month">
+					{% else %}
+					<td class="past-month">
+					{% endif %}
+					{{ date.day }}
+<!--					<input type="submit" value="Submit">--!><br>
+					<a href=./crosswords/puzzle/{{date.strftime('%Y-%m-%d')}}.pdf>Crossword - Puzzle</a><br>
+					<a href=./crosswords/solution/{{date.strftime('%Y-%m-%d')}}.pdf>Crossword - Solution</a><br>
+					<a href=./sudoku/puzzle/{{date.strftime('%Y-%m-%d')}}.pdf>Sudoku - Puzzle</a><br>
+					<a href=./sudoku/solution/{{date.strftime('%Y-%m-%d')}}.pdf>Sudoku - Solution</a> 
+					</td>
+				    {% endfor %}
+				</tr>
+				{% endfor %}
+			    </table>
+			</div>
+			{% endfor %}
+		    </div>
+		</div>
+	    </div>
+<!--</form>--!>
+{% endblock %}
+
+{% block tail %}
+    {{ super() }}
+    <script type="text/javascript">
+    $(window).load(function() {
+        $('#cal').orbit({     
+            animation: 'fade',
+            animationSpeed: 0,
+            timer: false,
+            directionalNav: true,
+            fluid: '4x3'
+        });
+   });
+</script>
+{% endblock %}
