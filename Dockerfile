@@ -17,6 +17,5 @@ RUN pip3 install -r requirements.txt
 
 ENV WEBROOT='/'
 
-ENTRYPOINT [ "python3" ]
 EXPOSE 80
-CMD [ "app.py" ]
+CMD [ "uwsgi", "--ini", "/app/puzzles.ini" ]

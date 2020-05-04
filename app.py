@@ -3,11 +3,23 @@ from flask import Flask, request, abort, redirect, render_template, send_file
 from datetime import datetime, date
 from calendar import Calendar
 from logging.handlers import RotatingFileHandler
-from apscheduler.scheduler import Scheduler
+from flask_apscheduler import APScheduler
 
+class Config(object):
+    JOBS = [
+        {
+            'id': 'job1',
+            'func': puzzles.daily_download,
+            'trigger': 'interval',
+            'hours': 1
+        }
+    ]
 
 app = Flask(__name__)
-cron = Scheduler(daemon=True)
+app.config.from_object(Config())
+scheduler = APScheduler()
+scheduler.init_app(app)
+scheduler.start()
 
 logger = logging.getLogger('root')
 filename, file_extension = os.path.splitext(os.path.basename(__file__))
@@ -19,14 +31,9 @@ consoleHandler.setFormatter(formatter)
 logger.addHandler(consoleHandler)
 logging.getLogger("requests").setLevel(logging.WARNING)
 logger.setLevel("DEBUG")
-fileHandler = RotatingFileHandler('/app/logs/puzzles.log', maxBytes=1024 * 1024 * 2, backupCount=1)
+fileHandler = RotatingFileHandler('/logs/puzzles.log', maxBytes=1024 * 1024 * 2, backupCount=1)
 fileHandler.setFormatter(formatter)
 logger.addHandler(fileHandler)
-
-cron.start()
-@cron.interval_schedule(hours=1)
-def check_for_puzzles():
-    puzzles.daily_download()
 
 @app.route(os.environ['WEB_ROOT'], defaults={'req_path': None}, strict_slashes=False)
 @app.route(os.environ['WEB_ROOT'] + '<path:req_path>')
@@ -78,7 +85,3 @@ def puzzle_year(req_path):
 				return "No File Found"
 	except:
 		abort(404)
-
-if __name__ == "__main__":
-	logger.info("Starting Puzzles Server")
-	app.run(host= '0.0.0.0', port=80)
