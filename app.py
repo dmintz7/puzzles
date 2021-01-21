@@ -38,50 +38,34 @@ logger.addHandler(fileHandler)
 @app.route(os.environ['WEB_ROOT'], defaults={'req_path': None}, strict_slashes=False)
 @app.route(os.environ['WEB_ROOT'] + '<path:req_path>')
 def puzzle_year(req_path):
-	rp = request.path 
-	if rp != '/' and rp.endswith('/'): return redirect("%s" % rp[:-1])
-	cal = Calendar(6)
-	year = None
+	if request.path  != '/' and request.path.endswith('/'): return redirect("%s" % request.path[:-1])
+	puzzle_path = os.path.join('/app/docs/',str(req_path))
 	try:
 		if not req_path:
-			puzzle_path = ""
-			year = date.today().year
-			if rp.endswith('/'):
-				return redirect("%s%s" % (rp, year))
-			else:
-				return redirect("%s/%s" % (rp, year))
+			return redirect("%s/%s" % (os.environ['WEB_ROOT'], date.today().year))
+		elif req_path.isnumeric():
+			return render_template('cal.html', year=int(req_path), cal=get_cal_list(int(req_path)))
 		else:
-			try:
-				if req_path.split('/')[1] == "today":
-					puzzle = req_path.split('/')[0]
-					if len(req_path.split('/')) > 2:
-						type = req_path.split('/')[2]
-					else:
-						type = "puzzle"
-
-					return redirect("/%s/%s/%s.pdf" % (puzzle, type, datetime.today().strftime('%Y-%m-%d')))
-			except:
-				pass
-		
-			if req_path.isnumeric():
-				puzzle_path = ""
-				year = int(req_path)
+			if os.path.isfile(puzzle_path):	
+				return send_file(puzzle_path)
 			else:
-				puzzle_path = os.path.join('/app/docs/',req_path)
-
-		if os.path.isfile(puzzle_path):	
-			return send_file(puzzle_path)
-		elif year:
-			cal_list = [
-				cal.monthdatescalendar(year, i+1)
-				for i in range(12)
-			]
-			return render_template('cal.html', year=year, cal=cal_list)
-		else:
-			if  "crosswords" in req_path:
-				new_url = "http://cdn2.amuselabs.com/pmm/crossword-pdf?id=Creators_WEB_%s&set=creatorsweb" % (str(req_path[-14:-4]).replace("-",""))
-				return redirect(new_url)
-			else:
-				return "No File Found"
+				if  "crosswords" in req_path:
+					tmp_url = "http://cdn2.amuselabs.com/pmm/crossword-pdf?id=Creators_WEB_%s&set=creatorsweb" % (str(req_path[-14:-4]).replace("-",""))
+					return redirect(tmp_url)
+				else:
+					return redirect("%s/%s" % (os.environ['WEB_ROOT'], date.today().year))
 	except:
-		abort(404)
+		raise
+		return redirect("%s/%s" % (os.environ['WEB_ROOT'], date.today().year))
+
+
+
+def get_cal_list(year):
+	cal = Calendar(6)
+	cal_list = [
+		cal.monthdatescalendar(year, i+1)
+		for i in range(12)
+	]
+	return cal_list
+	
+

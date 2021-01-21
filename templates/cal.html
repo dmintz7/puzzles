@@ -27,6 +27,9 @@
 		<div class="twelve columns centered">
 		    <div id="cal">
 			<table border="0">
+				{% if "" != "": %}
+					<tr><center><h1 style="color:red;">{{error}}</h1></center></</tr>
+				{% endif %}
 				<tr>
 					<td rowspan="2"><a href=./{{year-1}}><div align="left">{{year-1}}</div></a></td>
 					<td></td>
