@@ -31,7 +31,7 @@ consoleHandler.setFormatter(formatter)
 logger.addHandler(consoleHandler)
 logging.getLogger("requests").setLevel(logging.WARNING)
 logger.setLevel("DEBUG")
-fileHandler = RotatingFileHandler('/logs/puzzles.log', maxBytes=1024 * 1024 * 2, backupCount=1)
+fileHandler = RotatingFileHandler('/app/logs/puzzles.log', maxBytes=1024 * 1024 * 2, backupCount=1)
 fileHandler.setFormatter(formatter)
 logger.addHandler(fileHandler)
 
