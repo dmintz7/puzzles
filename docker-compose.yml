@@ -1,0 +1,15 @@
+version: '2'
+services:
+  puzzles:
+    container_name: puzzles
+    image: dmintz7/puzzles
+    build: .
+    ports:
+      - 8760:80
+    environment:
+      - LOG_LEVEL=INFO
+      - WEB_ROOT=/puzzles/
+    volumes:
+      - PATH/TO/PUZZLE/ROOT:/app/docs
+      - PATH/TO/LOGS:/app/logs
+    restart: unless-stopped
